@@ -1,0 +1,12 @@
+#ifndef GARDENINGSIMULATOR_GARDEN_H
+#define GARDENINGSIMULATOR_GARDEN_H
+
+
+
+class Garden {
+
+};
+
+
+
+#endif //GARDENINGSIMULATOR_GARDEN_H

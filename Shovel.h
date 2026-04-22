@@ -1,0 +1,12 @@
+#ifndef GARDENINGSIMULATOR_SHOVEL_H
+#define GARDENINGSIMULATOR_SHOVEL_H
+
+
+
+class Shovel {
+
+};
+
+
+
+#endif //GARDENINGSIMULATOR_SHOVEL_H

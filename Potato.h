@@ -1,0 +1,12 @@
+#ifndef GARDENINGSIMULATOR_POTATO_H
+#define GARDENINGSIMULATOR_POTATO_H
+
+
+
+class Potato {
+
+};
+
+
+
+#endif //GARDENINGSIMULATOR_POTATO_H
