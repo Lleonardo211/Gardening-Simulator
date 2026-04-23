@@ -1,7 +1,7 @@
 #ifndef GARDENINGSIMULATOR_MENU_H
 #define GARDENINGSIMULATOR_MENU_H
 
-#include "player.h"
+#include "Player.h"
 #include <vector>
 
 class Menu {
@@ -17,9 +17,6 @@ public:
 
     void printPlayers() const;
     int choosePlayer() const;
-
-    void printPlots() const;
-    int choosePlot() const;
 
 };
 

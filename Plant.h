@@ -4,7 +4,13 @@
 
 
 class Plant {
+private:
+    int HP;
+    int AP;
 
+public:
+    Plant();
+    virtual ~Plant() {}
 };
 
 

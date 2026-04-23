@@ -1,4 +1,5 @@
 #include "Menu.h"
+#include "Player.h"
 #include <iostream>
 #include <string>
 
@@ -47,6 +48,7 @@ void Menu::mainMenu(){
                 int index = choosePlayer();
                 if (index == 0) break;
                 if (index != -1) gardenMenu(index);
+                else std::cout << "Invalid index!";
                 break;
             }
             case 2:{
@@ -88,12 +90,13 @@ void Menu::gardenMenu(int playerIdx){
                 return;
             }
             case 2: {
-              //  storeMenu(playerIdx);
+                storeMenu(playerIdx);
                 break;
             }
             case 3: {
-               // int plotIdx = choosePlot();
-               // if (plotIdx != -1) gardeningMenu(plotIdx);
+                int plotIdx = players[playerIdx] -> choosePlot();
+                if (plotIdx != -1) gardeningMenu(plotIdx);
+                else std::cout << "Invalid index!";
                 break;
             }
             default:{
@@ -108,7 +111,7 @@ void Menu::gardenMenu(int playerIdx){
 void Menu::gardeningMenu(int plotIdx){
     plotIdx--;
     while(true){
-       // std::cout << "\n" << *plots[plotIdx] << "'s garden\n";
+        std::cout << "\nPlot #" << plotIdx <<"\n";
         std::cout << "Stats: ";
         std::cout << "1 - Exit to Garden\n";
         std::cout << "2 - Plant seeds";
@@ -116,6 +119,34 @@ void Menu::gardeningMenu(int plotIdx){
         std::cout << "4 - Use fertilizer";
         std::cout << "5 - Harvest";
         std::cout << "6 - Remove seedling";
+        std::cout << "\nOption: ";
+
+        int option;
+        std::cin >> option;
+        std::cin.ignore();
+        std::cout << '\n';
+
+        switch(option){
+            case 1: {
+                return;
+            }
+
+            default:{
+                std::cout << "Invalid option!";
+                std::cin.get();
+            }
+
+        }
+    }
+}
+
+void Menu::storeMenu(int playerIdx){
+    playerIdx--;
+    while(true){
+        std::cout << "\n---Botanic Store---\n";
+        std::cout << "1 - Exit to Garden\n";
+        std::cout << "2 - Buy";
+        std::cout << "3 - Sell";
         std::cout << "\nOption: ";
 
         int option;

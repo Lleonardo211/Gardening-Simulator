@@ -4,6 +4,13 @@
 
 
 class Shovel {
+private:
+    int AP;
+    int durability;
+
+public:
+    Shovel(int type);
+    ~Shovel() = default;
 
 };
 

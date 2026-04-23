@@ -18,5 +18,5 @@ add_executable(GardeningSimulator main.cpp
         Plant.h
         Shovel.cpp
         Shovel.h
-        Garden.cpp
-        Garden.h)
+        Plot.cpp
+        Plot.h)
