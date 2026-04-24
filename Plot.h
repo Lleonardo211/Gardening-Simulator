@@ -1,8 +1,9 @@
 #ifndef GARDENINGSIMULATOR_PLOT_H
 #define GARDENINGSIMULATOR_PLOT_H
 
-#include "Plant.h"
 #include <iostream>
+
+class Plant;
 
 class Plot {
 private:
@@ -10,6 +11,9 @@ private:
     const int id;
     static int rainLevel;
     static int sunlightLevel;
+    int waterLevel;
+    bool fertilization;
+    bool radioactivity;
     Plant* plant;
 
 public:
@@ -17,8 +21,16 @@ public:
     ~Plot();
 
     static void calculateWeather();
-    void assignPlant(Plant* plant);
+    void assignPlant(int seedType);
     void removePlant();
+    int increaseWaterLevel(int addition);
+    void increaseFertilization() { fertilization = 1; }
+    void increaseRadioactivity() { radioactivity = 1; }
+    bool empty();
+
+    int getWaterLevel() { return waterLevel; }
+    int getSunlightLevel() { return sunlightLevel; }
+    int getFertilization() { return fertilization; }
 
     friend std::ostream& operator<<(std::ostream& out, const Plot& obj);
 

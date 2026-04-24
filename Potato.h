@@ -2,9 +2,20 @@
 #define GARDENINGSIMULATOR_POTATO_H
 
 
+#include "Plant.h"
+#include <string>
 
-class Potato {
+class Player;
 
+class Potato : public Plant {
+public:
+    Potato();
+    ~Potato() override;
+
+    std::string plantType() const override;
+    void lightAttack(Player* player) override;
+    void normalAttack(Player* player) override;
+    void heavyAttack(Player* player) override;
 };
 
 

@@ -19,4 +19,6 @@ add_executable(GardeningSimulator main.cpp
         Shovel.cpp
         Shovel.h
         Plot.cpp
-        Plot.h)
+        Plot.h
+        Tank.cpp
+        Tank.h)
