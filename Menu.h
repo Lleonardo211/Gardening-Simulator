@@ -13,7 +13,8 @@ public:
     void mainMenu();
     void gardenMenu(int index);
     void storeMenu(int index);
-    void gardeningMenu(int playerIdx, int plotIdx);
+    void gardeningMenu(int playerIdx, int plotIdx) const;
+    void skip(int playerIdx);
 
     void printPlayers() const;
     int choosePlayer() const;

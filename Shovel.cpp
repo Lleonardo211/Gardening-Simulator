@@ -1,12 +1,8 @@
 #include "Shovel.h"
+#include <iostream>
 
 Shovel::Shovel(int type) {
     switch (type) {
-        case 1: {
-            this -> AP = 10;
-            this -> durability = 30;
-            break;
-        }
         case 2: {
             this -> AP = 20;
             this -> durability = 50;
@@ -23,4 +19,20 @@ Shovel::Shovel(int type) {
             break;
         }
     }
+}
+
+std::ostream& operator<<(std::ostream& out, const Shovel& obj) {
+    switch (obj.AP) {
+        case 20: {
+            out << "reinforced shovel";
+        }
+        case 30: {
+            out << "combat shovel";
+        }
+        default: {
+            out << "old shovel";
+        }
+    }
+    return out;
+    return out;
 }

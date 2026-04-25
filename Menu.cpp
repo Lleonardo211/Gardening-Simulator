@@ -22,7 +22,8 @@ int Menu::choosePlayer() const {
     std::cout << "Choose player index (type 0 to cancel): ";
     int index;
     std::cin >> index;
-    if (index < 0 || index > (int)players.size()) {
+    std::cin.get();
+    if (index < 0 || index > static_cast<int>(players.size())) {
         std::cout << "\nInvalid index!\n";
         std::cin.get();
         return -1;
@@ -30,7 +31,7 @@ int Menu::choosePlayer() const {
     return index;
 }
 
-void Menu::mainMenu(){
+void Menu::mainMenu() {
     while(true){
         std::cout << "\n---Main Menu---\n\n";
         std::cout << "1 - Select farmer\n";
@@ -56,6 +57,7 @@ void Menu::mainMenu(){
                 std::getline(std::cin, name);
                 Player* p = new Player(name);
                 players.push_back(p);
+                players[players.size() - 1] -> setWeather();
                 break;
             }
             case 3:{
@@ -70,13 +72,22 @@ void Menu::mainMenu(){
     }
 }
 
-void Menu::gardenMenu(int playerIdx){
+void Menu::skip(int playerIdx) {
+    players[playerIdx] -> setCurrentWeek(players[playerIdx] -> getCurrentWeek() + 1);
+    players[playerIdx] -> setWeather();
+    players[playerIdx] -> updateCrops();
+}
+
+void Menu::gardenMenu(int playerIdx) {
     playerIdx--;
     while(true){
-        std::cout << "\n---" << *players[playerIdx] << "'s garden---\n\n";
+        std::cout << "\n========= WEEK " << players[playerIdx] -> getCurrentWeek() << " =========\n\n";
+        std::cout << "---" << *players[playerIdx] << "'s garden---\n\n";
         std::cout << "1 - Exit to main menu\n";
-        std::cout << "2 - Head to the $hop\n";
-        std::cout << "3 - Select plot of land\n";
+        std::cout << "2 - View farmer's stats\n";
+        std::cout << "3 - Head to the $hop\n";
+        std::cout << "4 - Select plot of land\n";
+        std::cout << "5 - Skip the week\n";
         std::cout << "\nOption: ";
 
         int option;
@@ -89,19 +100,26 @@ void Menu::gardenMenu(int playerIdx){
                 return;
             }
             case 2: {
-                storeMenu(playerIdx);
+                players[playerIdx] -> printStats();
                 break;
             }
             case 3: {
+                storeMenu(playerIdx);
+                break;
+            }
+            case 4: {
                 int plotIdx = players[playerIdx] -> choosePlot();
                 if (plotIdx != -1) gardeningMenu(playerIdx, plotIdx);
+                break;
+            }
+            case 5: {
+                skip(playerIdx);
                 break;
             }
             default:{
                 std::cout << "Invalid option!";
                 std::cin.get();
             }
-
         }
     }
 }
@@ -110,22 +128,22 @@ int Menu::chooseSeeds(int playerIdx) const {
     int potatoSeeds = players[playerIdx] -> getPotatoSeeds();
     int tomatoSeeds = players[playerIdx] -> getTomatoSeeds();
     if (potatoSeeds == 0 && tomatoSeeds == 0) {
-        std::cout<<"There are no seedpacks in the inventory!";
+        std::cout<<"There are no seed packs in the inventory!";
         std::cin.get();
         return -1;
     }
-    std::cout << "#1 Potato seedpacks: " << potatoSeeds << '\n';
-    std::cout << "#2 Tomato seedpacks: " << tomatoSeeds << "\n\n";
-    std::cout << "Choose seedpack index (type 0 to cancel): ";
+    std::cout << "#1 Potato seed packs: " << potatoSeeds << '\n';
+    std::cout << "#2 Tomato seed packs: " << tomatoSeeds << "\n\n";
+    std::cout << "Choose seed pack index (type 0 to cancel): ";
     int index;
     std::cin >> index;
     if (index == 1 && potatoSeeds == 0) {
-        std::cout << "\nThere are no potato seedpacks in the inventory!\n";
+        std::cout << "\nThere are no potato seed packs in the inventory!\n";
         std::cin.get();
         return -1;
     }
     if (index == 2 && tomatoSeeds == 0) {
-        std::cout << "\nThere are no tomato seedpacks in the inventory!\n";
+        std::cout << "\nThere are no tomato seed packs in the inventory!\n";
         std::cin.get();
         return -1;
     }
@@ -147,16 +165,16 @@ int Menu::chooseFertilizer(int playerIdx) const {
     }
     std::cout << "#1 plain fertilizer " << fertilizer<< '\n';
     std::cout << "#2 atomic fertilizer " << atomicFertilizer << "\n\n";
-    std::cout << "Choose seedpack index (type 0 to cancel): ";
+    std::cout << "Choose seed pack index (type 0 to cancel): ";
     int index;
     std::cin >> index;
     if (index == 1 && fertilizer == 0) {
-        std::cout << "\nThere is no plain fertilizer in the inventory!\n";
+        std::cout << "\nThere is no plain fertilizer in the inventory!";
         std::cin.get();
         return -1;
     }
     if (index == 2 && atomicFertilizer == 0) {
-        std::cout << "\nThere is no atomic fertilizer in the inventory!\n";
+        std::cout << "\nThere is no atomic fertilizer in the inventory!";
         std::cin.get();
         return -1;
     }
@@ -168,7 +186,7 @@ int Menu::chooseFertilizer(int playerIdx) const {
     return index;
 }
 
-void Menu::gardeningMenu(int playerIdx, int plotIdx){
+void Menu::gardeningMenu (int playerIdx, int plotIdx) const {
     plotIdx--;
     while(true){
         std::cout << "\n---Plot #" << plotIdx + 1 <<"---\n\n";
@@ -202,11 +220,11 @@ void Menu::gardeningMenu(int playerIdx, int plotIdx){
             case 3: {
                 int aux = players[playerIdx] -> waterPlant(plotIdx);
                 if (aux == -1) {
-                    std::cout << "Your tank is empty!\n";
+                    std::cout << "Your tank is empty!";
                     std::cin.get();
                 }
                 if (aux == -2) {
-                    std::cout << "This plot's water level is max!\n";
+                    std::cout << "This plot's water level is max!";
                     std::cin.get();
                 }
                 break;
@@ -214,7 +232,7 @@ void Menu::gardeningMenu(int playerIdx, int plotIdx){
 
             case 4: {
                 if (players[playerIdx] -> fertilizationCheck(plotIdx)) {
-                    std::cout << "This land plot has already been fertilized!\n";
+                    std::cout << "This land plot has already been fertilized!";
                     std::cin.get();
                     break;
                 }
@@ -225,6 +243,17 @@ void Menu::gardeningMenu(int playerIdx, int plotIdx){
             }
 
             case 5: {
+                if (players[playerIdx] -> emptyCheck(plotIdx)) {
+                    std::cout << "This plot is empty!";
+                    std::cin.get();
+                    break;
+                }
+                if (players[playerIdx] -> growthCheck(plotIdx) != 1) {
+                    std::cout << "This crop has not grown!";
+                    std::cin.get();
+                    break;
+                }
+                players[playerIdx] -> harvest(plotIdx);
                 break;
             }
 
@@ -237,12 +266,11 @@ void Menu::gardeningMenu(int playerIdx, int plotIdx){
                 std::cout << "Invalid option!";
                 std::cin.get();
             }
-
         }
     }
 }
 
-void Menu::storeMenu(int playerIdx){
+void Menu::storeMenu(int playerIdx) {
     playerIdx--;
     while(true){
         std::cout << "\n---Botanic Store---\n\n";
@@ -265,7 +293,6 @@ void Menu::storeMenu(int playerIdx){
                 std::cout << "Invalid option!";
                 std::cin.get();
             }
-
         }
     }
 }

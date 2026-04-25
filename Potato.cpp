@@ -5,7 +5,7 @@ Potato::Potato() {}
 
 Potato::~Potato() {}
 
-std::string Potato::plantType() const { return "Potato"; }
+std::string Potato::plantType() const { return "potato"; }
 
 void Potato::lightAttack(Player* player) {
 

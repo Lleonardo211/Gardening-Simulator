@@ -2,6 +2,9 @@
 #define GARDENINGSIMULATOR_PLOT_H
 
 #include <iostream>
+#include <string>
+
+#include "Plant.h"
 
 class Plant;
 
@@ -24,13 +27,23 @@ public:
     void assignPlant(int seedType);
     void removePlant();
     int increaseWaterLevel(int addition);
-    void increaseFertilization() { fertilization = 1; }
-    void increaseRadioactivity() { radioactivity = 1; }
-    bool empty();
+    void increaseFertilization() { fertilization = true; }
+    void increaseRadioactivity() { radioactivity = true; }
+    void printPlant() const;
+    bool empty() const;
 
-    int getWaterLevel() { return waterLevel; }
-    int getSunlightLevel() { return sunlightLevel; }
-    int getFertilization() { return fertilization; }
+    static int getRainLevel() { return rainLevel; }
+    static int getSunlightLevel() { return sunlightLevel; }
+    int getWaterLevel() const { return waterLevel; }
+    int getFertilization() const { return fertilization; }
+    bool getPlantGrowth() const { return plant -> getGrowth(); }
+    bool getRadioactivity() const { return radioactivity; }
+    std::string getPlant() const;
+
+    bool waterCheck() const;
+    void growPlant() const;
+
+    void setWaterLevel(int newLevel) { waterLevel = newLevel; }
 
     friend std::ostream& operator<<(std::ostream& out, const Plot& obj);
 

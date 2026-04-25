@@ -1,7 +1,7 @@
 #ifndef GARDENINGSIMULATOR_SHOVEL_H
 #define GARDENINGSIMULATOR_SHOVEL_H
 
-
+#include <iostream>
 
 class Shovel {
 private:
@@ -11,6 +11,8 @@ private:
 public:
     Shovel(int type);
     ~Shovel() = default;
+
+    friend std::ostream& operator<<(std::ostream& out, const Shovel& obj);
 
 };
 

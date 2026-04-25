@@ -5,7 +5,7 @@ Tomato::Tomato() {}
 
 Tomato::~Tomato() {}
 
-std::string Tomato::plantType() const { return "Tomato"; }
+std::string Tomato::plantType() const { return "tomato"; }
 
 void Tomato::lightAttack(Player* player) {
 

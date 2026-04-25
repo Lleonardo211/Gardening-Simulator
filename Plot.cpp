@@ -3,13 +3,14 @@
 #include "Potato.h"
 #include "Tomato.h"
 #include <iostream>
+#include <string>
 #include <random>
 
 int Plot::plotCnt = 0;
 int Plot::rainLevel = 0;
 int Plot::sunlightLevel = 0;
 
-Plot::Plot() : id(plotCnt++), plant(nullptr), waterLevel(rainLevel), fertilization(0), radioactivity(0) {}
+Plot::Plot() : id(plotCnt++), waterLevel(rainLevel), fertilization(false), radioactivity(false), plant(nullptr) {}
 
 Plot::~Plot() {
     if (plant!=nullptr) {
@@ -30,10 +31,11 @@ std::ostream& operator<<(std::ostream& out, const Plot& obj) {
 void Plot::calculateWeather() {
     static std::random_device seed;
     static std::mt19937 gen(seed());
-    std::uniform_int_distribution<> distribution(1,300);
+    std::uniform_int_distribution<> rainDist(1,300); //distribution
+    std::uniform_int_distribution<> sunDist(1,10);
 
-    rainLevel = distribution(gen);
-    sunlightLevel = distribution(gen);
+    rainLevel = rainDist(gen);
+    sunlightLevel = sunDist(gen);
 }
 
 void Plot::assignPlant(int seedType) {
@@ -49,7 +51,16 @@ void Plot::assignPlant(int seedType) {
             this -> plant = t;
             break;
         }
+        default: {
+            std::cout << "Invalid seed type!";
+            std::cin.get();
+        }
     }
+}
+
+std::string Plot::getPlant() const {
+    if (plant == nullptr) return "none";
+    return plant -> plantType();
 }
 
 void Plot::removePlant() {
@@ -74,8 +85,34 @@ int Plot::increaseWaterLevel(int addition) {
     }
 }
 
-bool Plot::empty() {
+void Plot::printPlant() const {
+    if (plant != nullptr)
+        std::cout << *plant << '\n';
+    else
+        std::cout << "Empty\n";
+}
+
+bool Plot::waterCheck() const {
+    std::string plantType = getPlant();
+    if (plantType== "potato") {
+        if (waterLevel >= 150) {
+            return true;
+        }
+    } else if (plantType == "tomato") {
+        if (waterLevel >= 200) {
+            return true;
+        }
+    }
+    return false;
+}
+
+void Plot::growPlant() const {
+    if (plant != nullptr && fertilization == true && waterCheck())
+        plant -> setGrowth(true);
+}
+
+bool Plot::empty() const {
     if (this -> plant == nullptr)
-        return 1;
-    return 0;
+        return true;
+    return false;
 }
