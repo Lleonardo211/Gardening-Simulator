@@ -28,6 +28,8 @@ private:
     int fertilizer;
     int atomicFertilizer;
     bool attackEvent;
+    int taxes;
+    int offenses;
 
     void printPlots() const;
     void decreaseSeeds(int seedType);
@@ -46,7 +48,9 @@ public:
            int tomatoCrates,
            int fertilizer,
            int atomicFertilizer,
-           bool attackEvent);
+           bool attackEvent,
+           int taxes,
+           int offenses);
     Player(const Player& obj);
     Player& operator=(const Player& obj);
     ~Player();
@@ -91,6 +95,9 @@ public:
     void save(const std::string& farmer) const;
     static Player* load(const std::string& farmer);
 
+    void updateTaxes(int taxes);
+    void payTaxes();
+
     std::string getName() const { return name; }
     int getCurrentWeek() const { return currentWeek; }
     int getHP() const { return HP; }
@@ -106,10 +113,13 @@ public:
     int getFertilizer() const { return fertilizer; }
     int getAtomicFertilizer() const { return atomicFertilizer; }
     bool getAttackEvent() const { return attackEvent; }
+    int getTaxes() const { return taxes; }
+    int getOffenses() const { return offenses; }
 
     void setCurrentWeek(int newIdx) { currentWeek = newIdx; }
     void setCoins(int coinCnt) { coins = coinCnt; }
     void setAttackEvent(bool newValue) { attackEvent = newValue; }
+    void setOffenses(int newValue) { offenses = newValue; }
 
     friend std::istream& operator>>(std::istream& in, Player& obj);
     friend std::ostream& operator<<(std::ostream& out, const Player& obj);

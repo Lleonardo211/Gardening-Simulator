@@ -21,7 +21,9 @@ Player::Player(const std::string& name)
       tomatoCrates(0),
       fertilizer(0),
       atomicFertilizer(0),
-      attackEvent(false){
+      attackEvent(false),
+      taxes(30),
+      offenses(0){
     for (int i =0; i < 4; i++)
         plots.push_back(new Plot());
 }
@@ -37,7 +39,9 @@ Player::Player(const std::string& name,
                int tomatoCrates,
                int fertilizer,
                int atomicFertilizer,
-               bool attackEvent)
+               bool attackEvent,
+               int taxes,
+               int offenses)
                    :
                id(playerCnt++),
                name(name),
@@ -51,7 +55,9 @@ Player::Player(const std::string& name,
                tomatoCrates(tomatoCrates),
                fertilizer(fertilizer),
                atomicFertilizer(atomicFertilizer),
-               attackEvent(attackEvent) {}
+               attackEvent(attackEvent),
+               taxes(taxes),
+               offenses(offenses){}
 
 Player::Player(const Player& obj)
           : id(playerCnt++),
@@ -68,7 +74,9 @@ Player::Player(const Player& obj)
             tomatoCrates(obj.tomatoCrates),
             fertilizer(obj.fertilizer),
             atomicFertilizer(obj.atomicFertilizer),
-            attackEvent(obj.attackEvent){
+            attackEvent(obj.attackEvent),
+            taxes(obj.taxes),
+            offenses((obj.offenses)){
     for (Plot* p : obj.plots)
         plots.push_back(new Plot(*p));
 }
@@ -87,6 +95,8 @@ Player& Player::operator=(const Player& obj) {
         fertilizer = obj.fertilizer;
         atomicFertilizer = obj.atomicFertilizer;
         attackEvent = obj.attackEvent;
+        taxes = obj.taxes;
+        offenses = obj.offenses;
         for (Plot* p : plots) delete p;
         plots.clear();
         for (Plot* p : obj.plots)
@@ -127,7 +137,7 @@ void Player::updateCrops() const {
 void Player::printPlotStats(int plotIdx) const {
     plots[plotIdx] -> printPlant();
     std::cout << "water level: " << plots[plotIdx] -> getWaterLevel() << '\n';
-    std::cout << "sunlight level: " << plots[plotIdx] -> getSunlightLevel() << '\n';
+    std::cout << "sunlight level: " << plots[plotIdx] -> getSunlightLevel() << "/10\n";
     if (plots[plotIdx] -> getFertilization())
         std::cout << "fertilized\n\n";
     else
@@ -587,6 +597,32 @@ bool Player::initiateFight(int plotIdx) {
     return true;
 }
 
+void Player::updateTaxes(int amount) {
+    static std::random_device seed;
+    static std::mt19937 gen(seed());
+    std::uniform_int_distribution<> dist(-15, 20);
+
+    taxes = currentWeek * 20 + amount;
+    if (taxes < 0) taxes = 0;
+}
+
+void Player::payTaxes() {
+    if (taxes == 0) {
+        std::cout << "Taxes already paid!";
+        std::cin.get();
+        return;
+    }
+    if (coins < taxes) {
+        std::cout << "Insufficient funds!";
+        std::cin.get();
+    } else {
+        coins -=taxes;
+        taxes = 0;
+        std::cout << "Taxes paid!";
+        std::cin.get();
+    }
+}
+
 void Player::save(const std::string& farmer) const {
     std::ofstream file(farmer);
     if (!file.is_open()) throw std::runtime_error("Could not open save file!");
@@ -597,6 +633,7 @@ void Player::save(const std::string& farmer) const {
          << potatoCrates << ' ' << tomatoCrates << ' '
          << fertilizer << ' ' << atomicFertilizer << ' '
          << attackEvent << '\n';
+    file << taxes << ' ' << offenses << '\n';
     file << shovel.getType() << ' ' << shovel.getAP() << ' ' << shovel.getDurability() << '\n';
     file << tank.getSize() << ' ' << tank.getWaterVolume() << '\n';
     file << plots.size() << '\n';
@@ -620,6 +657,7 @@ Player* Player::load(const std::string& farmer) {
     int potatoSeeds, tomatoSeeds,
         potatoCrates, tomatoCrates,
         fertilizer, atomicFertilizer;
+    int taxes, offenses;
     bool attackEvent;
     int shovelType, shovelAP, shovelDurability;
     int tankSize, tankWaterVolume;
@@ -631,6 +669,7 @@ Player* Player::load(const std::string& farmer) {
          >> potatoCrates >> tomatoCrates
          >> fertilizer >> atomicFertilizer
          >> attackEvent;
+    file >> taxes >> offenses;
     file >> shovelType >> shovelAP >> shovelDurability;
     file >> tankSize >> tankWaterVolume;
     file >> plotCnt;
@@ -639,7 +678,7 @@ Player* Player::load(const std::string& farmer) {
     Player* player = new Player(name, currentWeek, HP, medkits, coins,
                                 potatoSeeds,tomatoSeeds, potatoCrates,
                                 tomatoCrates, fertilizer, atomicFertilizer,
-                                attackEvent);
+                                attackEvent,taxes,offenses);
 
     for (int i = 0; i < plotCnt; i++) {
         int waterLevel, fertilization, radioactivity;
@@ -682,7 +721,7 @@ std::istream& operator>>(std::istream& in, Player& obj) {
 }
 
 std::ostream& operator<<(std::ostream& out, const Player& obj) {
-    out << "Player #" << obj.id + 1 << " " << obj.name;
+    out << obj.name;
     return out;
 }
 

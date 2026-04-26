@@ -17,7 +17,7 @@ void Menu::printPlayers() const {
         return;
     }
     for (size_t i = 0; i <players.size(); i++)
-        std::cout << *players[i] << "\n\n";
+        std::cout << '#' << i + 1 << ' ' << *players[i] << "\n\n";
 }
 
 int Menu::choosePlayer() const {
@@ -27,7 +27,7 @@ int Menu::choosePlayer() const {
         return -1;
     }
     printPlayers();
-    std::cout << "Choose player index (type 0 to cancel): ";
+    std::cout << "Choose farmer index (type 0 to cancel): ";
     int index;
     try {
         std::cin >> index;
@@ -118,12 +118,33 @@ void Menu::mainMenu() {
     }
 }
 
-void Menu::skip(int playerIdx) {
+bool Menu::skip(int playerIdx) {
     players[playerIdx] -> setCurrentWeek(players[playerIdx] -> getCurrentWeek() + 1);
     players[playerIdx] -> setWeather();
     players[playerIdx] -> updateCrops();
+
+    int taxes = players[playerIdx] -> getTaxes();
+    if (taxes != 0) {
+        if (players[playerIdx] -> getOffenses() > 1) {
+            std::cout << "You were trying to get away with not paying your taxes...";
+            std::cin.get();
+            std::cout << "\nYou were killed by the tax police";
+            std::cin.get();
+            gameOver(playerIdx);
+            return false;
+        } else {
+            std::cout << "WARNING!! Pay your taxes...";
+            std::cin.get();
+            players[playerIdx] -> updateTaxes(taxes);
+            players[playerIdx] -> setOffenses(players[playerIdx] -> getOffenses() + 1);
+        }
+    } else {
+        players[playerIdx] -> updateTaxes(taxes);
+    }
+
     store.resetRagebait();
     store.resetPrices();
+    return true;
 }
 
 void Menu::gardenMenu(int playerIdx) {
@@ -136,7 +157,8 @@ void Menu::gardenMenu(int playerIdx) {
         std::cout << "2 - View farmer's stats\n";
         std::cout << "3 - Head to the $hop\n";
         std::cout << "4 - Select plot of land\n";
-        std::cout << "5 - Skip the week\n";
+        std::cout << "5 - Pay weekly life tax: " << players[playerIdx] -> getTaxes() << '\n';
+        std::cout << "6 - Skip the week\n";
         std::cout << "\nOption: ";
 
         int option;
@@ -171,7 +193,11 @@ void Menu::gardenMenu(int playerIdx) {
                 break;
             }
             case 5: {
-                skip(playerIdx);
+                players[playerIdx] -> payTaxes();
+                break;
+            }
+            case 6: {
+                if (!skip(playerIdx)) return;
                 break;
             }
             default:{
