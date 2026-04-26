@@ -12,10 +12,12 @@ private:
 
     void gardenMenu(int index);
     void storeMenu(int index);
-    void gardeningMenu(int playerIdx, int plotIdx) const;
+    bool unlucky() const;
+    void gardeningMenu(int playerIdx, int plotIdx);
     void skip(int playerIdx);
     void buy(int playerIdx);
     void sell(int playerIdx);
+    void gameOver(int playerIdx);
 
     void printPlayers() const;
     int choosePlayer() const;

@@ -9,10 +9,11 @@ class Player;
 
 class Potato : public Plant {
 public:
-    Potato();
+    Potato() : Plant(false, 60, 8 , 10) {}
     ~Potato() override;
 
     std::string plantType() const override;
+    void plantAttack(Player *player) override;
     void lightAttack(Player* player) override;
     void normalAttack(Player* player) override;
     void heavyAttack(Player* player) override;

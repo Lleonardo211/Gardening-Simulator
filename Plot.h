@@ -38,6 +38,7 @@ public:
     int getFertilization() const { return fertilization; }
     bool getPlantGrowth() const { return plant -> getGrowth(); }
     bool getRadioactivity() const { return radioactivity; }
+    Plant* getPlantPtr() const { return plant; }
     std::string getPlant() const;
 
     bool waterCheck() const;

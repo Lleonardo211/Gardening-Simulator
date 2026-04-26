@@ -17,6 +17,8 @@ public:
     void bigUpgrade();
 
     int getType() const { return type; }
+    int getAP() const { return AP; }
+    int getDurability() const { return durability;}
 
     friend std::ostream& operator<<(std::ostream& out, const Shovel& obj);
 

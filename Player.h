@@ -42,6 +42,7 @@ public:
     int choosePlot() const;
     bool growthCheck(int plotIdx) const { return plots[plotIdx] -> getPlantGrowth(); }
     bool emptyCheck(int plotIdx) const;
+    bool radioactivityCheck(int plotIdx) const;
     void emptyPlot(int plotIdx) const;
 
     void setWeather() const;
@@ -64,6 +65,13 @@ public:
 
     void sellPotatoes(Store& store, int amount);
     void sellTomatoes(Store& store, int amount);
+
+    bool initiateFight(int plotIdx);
+    void lightAttack(Plant* plant);
+    void normalAttack(Plant* plant);
+    void heavyAttack(Plant* plant);
+
+    void takeDamage(int damage);
 
     int getCurrentWeek() const{ return currentWeek; }
     int getPotatoSeeds() const{ return potatoSeeds; }

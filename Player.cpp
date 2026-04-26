@@ -80,7 +80,14 @@ int Player::choosePlot() const {
     printPlots();
     std::cout << "Choose plot index (type 0 to cancel): ";
     int index;
-    std::cin >> index;
+    try {
+        std::cin >> index;
+        if (std::cin.fail()) throw std::runtime_error("Invalid input!");
+    } catch (std::runtime_error& e) {
+        std::cout << "Error: " << e.what() << '\n';
+        std::cin.clear();
+        std::cin.ignore();
+    }
     std::cin.ignore();
     if (index == 0) return -1;
     if (index < 0 || index > static_cast<int>(plots.size())) {
@@ -120,6 +127,11 @@ void Player::plantSeeds(int plotIdx, int seedType) {
 
 bool Player::emptyCheck(int plotIdx) const {
    return plots[plotIdx] -> empty();
+}
+
+bool Player::radioactivityCheck(int plotIdx) const {
+    if (plots[plotIdx] -> getRadioactivity()) return true;
+    return false;
 }
 
 void Player::emptyPlot(int plotIdx) const {
@@ -209,12 +221,19 @@ void Player::buy(Store& store, int product) {
 
     if (coins < price) {
         std::cout << "Insufficient funds!... Attempt barter?\n\n";
-        int index;
+        int option;
         std::cout << "1 - Yes\n";
         std::cout << "2 - No\n";
-        std::cout << "Choose index: ";
-        std::cin >> index;
-        if (index == 1) {
+        std::cout << "Choose option: ";
+        try {
+            std::cin >> option;
+            if (std::cin.fail()) throw std::runtime_error("Invalid input!");
+        } catch (std::runtime_error& e) {
+            std::cout << "Error: " << e.what() << '\n';
+            std::cin.clear();
+            std::cin.ignore();
+        }
+        if (option == 1) {
             int newPrice = store.barter(coins, price);
             if ( newPrice != -1) {
                 std::cout << "\nYou struck a deal!";
@@ -346,6 +365,7 @@ void Player::fillWaterTank() {
             } else {
                 tank.setWaterVolume(size);
                 coins -= 80;
+                break;
             }
         }
         case 3000: {
@@ -356,6 +376,7 @@ void Player::fillWaterTank() {
             } else {
                 tank.setWaterVolume(size);
                 coins -= 120;
+                break;
             }
         }
         case 4000: {
@@ -366,8 +387,135 @@ void Player::fillWaterTank() {
             } else {
                 tank.setWaterVolume(size);
                 coins -= 160;
+                break;
             }
         }
+        default: {
+            std::cout << "Invalid size!";
+            std::cin.get();
+        }
     }
+}
+
+void Player::takeDamage(int damage) {
+    HP -= damage;
+    if (HP < 0) HP =0;
+}
+
+void Player::lightAttack(Plant* plant) {
+    static std::random_device seed;
+    static std::mt19937 gen(seed());
+    std::uniform_int_distribution<> dist(1,100);
+    int luck = dist(gen);
+    if (luck > 20) {
+        int damage = shovel.getAP();
+        plant -> takeDamage(damage);
+        std::cout << "Plant hit for " << damage << " HP";
+        std::cin.get();
+    } else {
+        std::cout << "You missed!";
+        std::cin.get();
+    }
+
+}
+
+void Player::normalAttack(Plant* plant) {
+    static std::random_device seed;
+    static std::mt19937 gen(seed());
+    std::uniform_int_distribution<> dist(1,100);
+    int luck = dist(gen);
+    if (luck > 40) {
+        int damage = shovel.getAP() * 15 / 10;
+        plant -> takeDamage(damage);
+        std::cout << "Plant hit for " << damage << " HP";
+        std::cin.get();
+    } else {
+        std::cout << "You missed!";
+        std::cin.get();
+    }
+
+}
+
+void Player::heavyAttack(Plant* plant) {
+    static std::random_device seed;
+    static std::mt19937 gen(seed());
+    std::uniform_int_distribution<> dist(1,100);
+    int luck = dist(gen);
+        if (luck > 60) {
+            int damage = shovel.getAP() * 2;
+            plant -> takeDamage(damage);
+            std::cout << "Plant hit for " << damage << " HP";
+            std::cin.get();
+        } else {
+            std::cout << "You missed!";
+            std::cin.get();
+        }
+}
+
+bool Player::initiateFight(int plotIdx) {
+    Plant* plant = plots[plotIdx] -> getPlantPtr();
+    std::cout << "A vicious " << plant -> plantType() << " is attacking you! Put it back in the dirt, soldier...";
+    std::cin.get();
+
+    while (HP && plant -> getHP()) {
+        std::cout << " 1 - Light Attack\n";
+        std::cout << " 2 - Normal Attack\n";
+        std::cout << " 3 - Heavy Attack\n";
+        std::cout << " 4 - Use Medkit\n";
+        std::cout << " 5 - Choose action: ";
+        int option;
+        try {
+            std::cin >> option;
+            if (std::cin.fail()) throw std::runtime_error("Invalid input!");
+        } catch (std::runtime_error& e) {
+            std::cout << "Error: " << e.what() << '\n';
+            std::cin.clear();
+            std::cin.ignore();
+        }
+        std::cin.get();
+
+        switch (option) {
+            case 1: {
+                lightAttack(plant);
+                break;
+            }
+            case 2: {
+                normalAttack(plant);
+                break;
+            }
+            case 3: {
+                heavyAttack(plant);
+                break;
+            }
+            case 4: {
+                if (medkits) {
+                    HP = 100;
+                    medkits--;
+                } else {
+                    std::cout << "You ran out of medkits!";
+                    std::cin.get();
+                }
+                break;
+            }
+            default: {
+                std::cout << "Invalid option";
+                std::cin.get();
+            }
+        }
+
+        if (!plant -> getHP()) {
+            std::cout << "You defeated the plant!";
+            std::cin.get();
+            return true;
+        }
+
+        plant -> plantAttack(this);
+
+        if (!HP) {
+            std::cout << "You were eaten!";
+            return false;
+        }
+    }
+    return true;
 }
 

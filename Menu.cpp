@@ -2,6 +2,7 @@
 #include "Player.h"
 #include <iostream>
 #include <string>
+#include <random>
 
 Menu::~Menu() {
     for (Player* p: players)
@@ -27,7 +28,14 @@ int Menu::choosePlayer() const {
     printPlayers();
     std::cout << "Choose player index (type 0 to cancel): ";
     int index;
-    std::cin >> index;
+    try {
+        std::cin >> index;
+        if (std::cin.fail()) throw std::runtime_error("Invalid input!");
+    } catch (std::runtime_error& e) {
+        std::cout << "Error: " << e.what() << '\n';
+        std::cin.clear();
+        std::cin.ignore();
+    }
     std::cin.get();
     if (index < 0 || index > static_cast<int>(players.size())) {
         std::cout << "\nInvalid index!\n";
@@ -46,7 +54,14 @@ void Menu::mainMenu() {
         std::cout << "\nOption: ";
 
         int option;
-        std::cin >> option;
+        try {
+            std::cin >> option;
+            if (std::cin.fail()) throw std::runtime_error("Invalid input!");
+        } catch (std::runtime_error& e) {
+            std::cout << "Error: " << e.what() << '\n';
+            std::cin.clear();
+            std::cin.ignore();
+        }
         std::cin.ignore();
         std::cout << '\n';
 
@@ -89,6 +104,7 @@ void Menu::skip(int playerIdx) {
 void Menu::gardenMenu(int playerIdx) {
     playerIdx--;
     while(true){
+        if (playerIdx >= static_cast<int>(players.size())) return;
         std::cout << "\n========= WEEK " << players[playerIdx] -> getCurrentWeek() << " =========\n\n";
         std::cout << "---" << *players[playerIdx] << "'s garden---\n\n";
         std::cout << "1 - Exit to main menu\n";
@@ -99,7 +115,14 @@ void Menu::gardenMenu(int playerIdx) {
         std::cout << "\nOption: ";
 
         int option;
-        std::cin >> option;
+        try {
+            std::cin >> option;
+            if (std::cin.fail()) throw std::runtime_error("Invalid input!");
+        } catch (std::runtime_error& e) {
+            std::cout << "Error: " << e.what() << '\n';
+            std::cin.clear();
+            std::cin.ignore();
+        }
         std::cin.ignore();
         std::cout << '\n';
 
@@ -144,7 +167,14 @@ int Menu::chooseSeeds(int playerIdx) const {
     std::cout << "#2 Tomato seed packs: " << tomatoSeeds << "\n\n";
     std::cout << "Choose seed pack index (type 0 to cancel): ";
     int index;
-    std::cin >> index;
+    try {
+        std::cin >> index;
+        if (std::cin.fail()) throw std::runtime_error("Invalid input!");
+    } catch (std::runtime_error& e) {
+        std::cout << "Error: " << e.what() << '\n';
+        std::cin.clear();
+        std::cin.ignore();
+    }
     if (index == 1 && potatoSeeds == 0) {
         std::cout << "\nThere are no potato seed packs in the inventory!\n";
         std::cin.get();
@@ -175,7 +205,14 @@ int Menu::chooseFertilizer(int playerIdx) const {
     std::cout << "#2 atomic fertilizer " << atomicFertilizer << "\n\n";
     std::cout << "Choose seed pack index (type 0 to cancel): ";
     int index;
-    std::cin >> index;
+    try {
+        std::cin >> index;
+        if (std::cin.fail()) throw std::runtime_error("Invalid input!");
+    } catch (std::runtime_error& e) {
+        std::cout << "Error: " << e.what() << '\n';
+        std::cin.clear();
+        std::cin.ignore();
+    }
     if (index == 1 && fertilizer == 0) {
         std::cout << "\nThere is no plain fertilizer in the inventory!";
         std::cin.get();
@@ -194,7 +231,20 @@ int Menu::chooseFertilizer(int playerIdx) const {
     return index;
 }
 
-void Menu::gardeningMenu (int playerIdx, int plotIdx) const {
+bool Menu::unlucky() const {
+    static std::random_device seed;
+    static std::mt19937 gen(seed());
+    std::uniform_int_distribution<> dist(1,100);
+    if (dist(gen) < 35) return true;
+    return false;
+}
+
+void Menu::gameOver(int playerIdx) {
+    delete players[playerIdx];
+    players.erase(players.begin() + playerIdx);
+}
+
+void Menu::gardeningMenu (int playerIdx, int plotIdx) {
     plotIdx--;
     while(true){
         std::cout << "\n---Plot #" << plotIdx + 1 <<"---\n\n";
@@ -209,7 +259,14 @@ void Menu::gardeningMenu (int playerIdx, int plotIdx) const {
         std::cout << "\nOption: ";
 
         int option;
-        std::cin >> option;
+        try {
+            std::cin >> option;
+            if (std::cin.fail()) throw std::runtime_error("Invalid input!");
+        } catch (std::runtime_error& e) {
+            std::cout << "Error: " << e.what() << '\n';
+            std::cin.clear();
+            std::cin.ignore();
+        }
         std::cin.ignore();
         std::cout << '\n';
 
@@ -261,8 +318,19 @@ void Menu::gardeningMenu (int playerIdx, int plotIdx) const {
                     std::cin.get();
                     break;
                 }
-                players[playerIdx] -> harvest(plotIdx);
-                break;
+                if (players[playerIdx] -> radioactivityCheck(plotIdx) && unlucky()) {
+                    std::cout << "Oh no... The radiation gave birth to a vicious beast!";
+                    std::cin.get();
+                    bool survived = players[playerIdx] -> initiateFight(plotIdx);
+                    if (!survived) {
+                        gameOver(playerIdx);
+                        return;
+                    }
+                    break;
+                } else {
+                    players[playerIdx] -> harvest(plotIdx);
+                    break;
+                }
             }
 
             case 6: {
@@ -288,7 +356,14 @@ void Menu::storeMenu(int playerIdx) {
         std::cout << "\nOption: ";
 
         int option;
-        std::cin >> option;
+        try {
+            std::cin >> option;
+            if (std::cin.fail()) throw std::runtime_error("Invalid input!");
+        } catch (std::runtime_error& e) {
+            std::cout << "Error: " << e.what() << '\n';
+            std::cin.clear();
+            std::cin.ignore();
+        }
         std::cin.ignore();
         std::cout << '\n';
 
@@ -333,7 +408,7 @@ void Menu::buy(int playerIdx) {
         std::cout << "3 - reinforced shovel: " << store.getShovelPrice() << '\n';
         std::cout << "4 - upgrade water tank: " << store.getTankPrice() << '\n';
         std::cout << "5 - medkit: " << store.getMedkitPrice() << '\n';
-        std::cout << "6 - fertilizer: " << store.getPotatoPrice() << '\n';
+        std::cout << "6 - fertilizer: " << store.getFerPrice() << '\n';
         std::cout << "7 - plot of land: " << store.getPlotPrice() << '\n';
         if (store.getKnowledge() == false)
             std::cout << "8 - Ask if there is any way to make plants grow faster...\n";
@@ -343,7 +418,14 @@ void Menu::buy(int playerIdx) {
         std::cout << "\nOption: ";
 
         int option;
-        std::cin >> option;
+        try {
+            std::cin >> option;
+            if (std::cin.fail()) throw std::runtime_error("Invalid input!");
+        } catch (std::runtime_error& e) {
+            std::cout << "Error: " << e.what() << '\n';
+            std::cin.clear();
+            std::cin.ignore();
+        }
         std::cin.ignore();
         std::cout << '\n';
 
@@ -414,7 +496,14 @@ void Menu::sell(int playerIdx) {
         std::cout << "\nOption: ";
 
         int option;
-        std::cin >> option;
+        try {
+            std::cin >> option;
+            if (std::cin.fail()) throw std::runtime_error("Invalid input!");
+        } catch (std::runtime_error& e) {
+            std::cout << "Error: " << e.what() << '\n';
+            std::cin.clear();
+            std::cin.ignore();
+        }
         std::cin.ignore();
         std::cout << '\n';
 

@@ -1,7 +1,7 @@
 #include "Shovel.h"
 #include <iostream>
 
-Shovel::Shovel() : type(1), AP(10), durability(30){}
+Shovel::Shovel() : type(1), AP(5), durability(30){}
 
 std::ostream& operator<<(std::ostream& out, const Shovel& obj) {
     switch (obj.type) {
@@ -23,13 +23,13 @@ std::ostream& operator<<(std::ostream& out, const Shovel& obj) {
 
 void Shovel::mediumUpgrade() {
     type = 2;
-    AP = 20;
+    AP = 10;
     durability = 50;
 }
 
 void Shovel::bigUpgrade() {
     type = 3;
-    AP = 30;
+    AP = 20;
     durability = 100;
 }
 
