@@ -12,20 +12,46 @@ int Plot::sunlightLevel = 0;
 
 Plot::Plot() : id(plotCnt++), waterLevel(rainLevel), fertilization(false), radioactivity(false), plant(nullptr) {}
 
+Plot::Plot(int waterLevel, bool fertilization, bool radioactivity)
+    : id(plotCnt++), waterLevel(waterLevel), fertilization(fertilization), radioactivity(radioactivity), plant(nullptr) {}
+
+Plot::Plot(const Plot& obj)
+    : id(plotCnt++),
+      waterLevel(obj.waterLevel),
+      fertilization(obj.fertilization),
+      radioactivity(obj.radioactivity),
+      plant(nullptr){
+    if (obj.plant != nullptr) {
+        if (obj.plant -> plantType() == "potato")
+            plant = new Potato(*static_cast<Potato*>(obj.plant));
+        else
+            plant = new Tomato(*static_cast<Tomato*>(obj.plant));
+    }
+}
+
+Plot& Plot::operator=(const Plot& obj) {
+    if (this != &obj) {
+        waterLevel = obj.waterLevel;
+        fertilization = obj.fertilization;
+        radioactivity = obj.radioactivity;
+        delete this -> plant;
+        if (obj.plant != nullptr) {
+            if (obj.plant -> plantType() == "potato")
+                this -> plant = new Potato(*static_cast<Potato*>(obj.plant));
+            else
+                this -> plant = new Tomato(*static_cast<Tomato*>(obj.plant));
+        } else {
+            this -> plant = nullptr;
+        }
+    }
+    return *this;
+}
+
 Plot::~Plot() {
     if (plant!=nullptr) {
         delete plant;
         plant = nullptr;
     }
-}
-
-std::ostream& operator<<(std::ostream& out, const Plot& obj) {
-    out << "Plot #" << obj.id + 1 << '\n';
-    if (obj.plant == nullptr)
-        out << "Empty\n";
-    else
-        out << *obj.plant << '\n';
-    return out;
 }
 
 void Plot::calculateWeather() {
@@ -115,4 +141,26 @@ bool Plot::empty() const {
     if (this -> plant == nullptr)
         return true;
     return false;
+}
+
+std::istream& operator>>(std::istream& in, Plot& obj) {
+    std::cout << "\nWater level: ";
+    in >> obj.waterLevel;
+    in.ignore();
+    std::cout <<"\nFertilization: ";
+    in >> obj.fertilization;
+    in.ignore();
+    std::cout << "\nRadioactivity: ";
+    in >> obj.radioactivity;
+    in.ignore();
+    return in;
+}
+
+std::ostream& operator<<(std::ostream& out, const Plot& obj) {
+    out << "Plot #" << obj.id + 1 << '\n';
+    if (obj.plant == nullptr)
+        out << "Empty\n";
+    else
+        out << *obj.plant << '\n';
+    return out;
 }

@@ -15,6 +15,8 @@ protected:
 public:
     Plant();
     Plant(bool growth, int hp, int ap, int toughness);
+    Plant(const Plant& obj);
+    Plant& operator=(const Plant& obj);
     virtual ~Plant() {};
 
     virtual std::string plantType() const = 0;

@@ -4,6 +4,18 @@
 #include <string>
 #include <random>
 
+Tomato::Tomato(const Tomato& obj) : Plant(obj.growth, obj.HP, obj.AP, obj.toughness){}
+
+Tomato& Tomato::operator=(const Tomato& obj) {
+    if (this != &obj) {
+        growth = obj.growth;
+        HP = obj.HP;
+        AP = obj.AP;
+        toughness = obj.toughness;
+    }
+    return *this;
+}
+
 Tomato::~Tomato() {}
 
 std::string Tomato::plantType() const { return "tomato"; }
@@ -68,4 +80,17 @@ void Tomato::heavyAttack(Player* player) {
         std::cout << "Plant missed!";
         std::cin.get();
     }
+}
+
+std::istream& operator>>(std::istream& in, Tomato& obj) {
+    std::cout << "Choose HP: ";
+    in >> obj.HP;
+    in.ignore();
+    std::cout << "\nChoose AP: ";
+    in >> obj.AP;
+    in.ignore();
+    std::cout << "\nChoose toughness: ";
+    in >> obj.toughness;
+    in.ignore();
+    return in;
 }

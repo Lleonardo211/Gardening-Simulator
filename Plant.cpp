@@ -3,6 +3,18 @@
 
 Plant::Plant() : growth(false) {}
 
+Plant::Plant(const Plant& obj) : growth(obj.growth), HP(obj.HP), AP(obj.AP), toughness(obj.toughness){}
+
+Plant& Plant::operator=(const Plant& obj) {
+    if (this != &obj) {
+        growth = obj.growth;
+        HP = obj.HP;
+        AP = obj.AP;
+        toughness = obj.toughness;
+    }
+    return *this;
+}
+
 Plant::Plant(bool growth, int hp, int ap, int toughness)
     :  growth(growth), HP(hp), AP(ap), toughness(toughness) {}
 

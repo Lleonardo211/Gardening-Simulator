@@ -7,6 +7,8 @@
 class Tomato : public Plant {
 public:
     Tomato() : Plant(false, 40, 5, 4) {}
+    Tomato(const Tomato& obj);
+    Tomato& operator=(const Tomato& obj);
     ~Tomato() override;
 
     std::string plantType() const override;
@@ -14,6 +16,8 @@ public:
     void lightAttack(Player* player) override;
     void normalAttack(Player* player) override;
     void heavyAttack(Player* player) override;
+
+    friend std::istream& operator>>(std::istream& in, Tomato& obj);
 };
 
 

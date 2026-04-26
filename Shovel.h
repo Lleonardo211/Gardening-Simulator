@@ -11,6 +11,9 @@ private:
 
 public:
     Shovel();
+    Shovel(int type, int AP, int durability);
+    Shovel(const Shovel& obj);
+    Shovel& operator=(const Shovel& obj);
     ~Shovel() = default;
 
     void mediumUpgrade();
@@ -20,8 +23,8 @@ public:
     int getAP() const { return AP; }
     int getDurability() const { return durability;}
 
+    friend std::istream& operator>>(std::istream& in, Shovel& obj);
     friend std::ostream& operator<<(std::ostream& out, const Shovel& obj);
-
 };
 
 

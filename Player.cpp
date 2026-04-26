@@ -14,8 +14,6 @@ Player::Player(const std::string& name)
       HP(100),
       medkits(0),
       coins(200),
-      shovel(),
-      tank(),
       potatoSeeds(0),
       tomatoSeeds(0),
       potatoCrates(0),
@@ -26,14 +24,74 @@ Player::Player(const std::string& name)
         plots.push_back(new Plot());
 }
 
+Player::Player(const std::string& name,
+               int currentWeek,
+               int HP,
+               int medkits,
+               int coins,
+               int potatoSeeds,
+               int tomatoSeeds,
+               int potatoCrates,
+               int tomatoCrates,
+               int fertilizer,
+               int atomicFertilizer)
+                   :
+               id(playerCnt++),
+               name(name),
+               currentWeek(currentWeek),
+               HP(HP),
+               medkits(medkits),
+               coins(coins),
+               potatoSeeds(potatoSeeds),
+               tomatoSeeds(tomatoSeeds),
+               potatoCrates(potatoCrates),
+               tomatoCrates(tomatoCrates),
+               fertilizer(fertilizer),
+               atomicFertilizer(atomicFertilizer) {}
+
+Player::Player(const Player& obj)
+          : id(playerCnt++),
+            name(obj.name),
+            currentWeek(obj.currentWeek),
+            HP(obj.HP),
+            medkits(obj.medkits),
+            coins(obj.coins),
+            shovel(obj.shovel),
+            tank(obj.tank),
+            potatoSeeds(obj.potatoSeeds),
+            tomatoSeeds(obj.tomatoSeeds),
+            potatoCrates(obj.potatoCrates),
+            tomatoCrates(obj.tomatoCrates),
+            fertilizer(obj.fertilizer),
+            atomicFertilizer(obj.atomicFertilizer) {
+    for (Plot* p : obj.plots)
+        plots.push_back(new Plot(*p));
+}
+
+Player& Player::operator=(const Player& obj) {
+    if (this != &obj) {
+        name = obj.name;
+        currentWeek =obj .currentWeek;
+        HP = obj.HP;
+        medkits = obj.medkits;
+        coins = obj.coins;
+        potatoSeeds = obj.potatoSeeds;
+        tomatoSeeds = obj.tomatoSeeds;
+        potatoCrates = obj.potatoCrates;
+        tomatoCrates = obj.tomatoCrates;
+        fertilizer = obj.fertilizer;
+        atomicFertilizer = obj.atomicFertilizer;
+        for (Plot* p : plots) delete p;
+        plots.clear();
+        for (Plot* p : obj.plots)
+            plots.push_back(new Plot(*p));
+    }
+    return *this;
+}
+
 Player::~Player() {
     for (Plot* p: plots)
         delete p;
-}
-
-std::ostream& operator<<(std::ostream& out, const Player& obj) {
-    out << "Player #" << obj.id + 1 << " " << obj.name;
-    return out;
 }
 
 void Player::printStats() const {
@@ -518,4 +576,16 @@ bool Player::initiateFight(int plotIdx) {
     }
     return true;
 }
+
+std::istream& operator>>(std::istream& in, Player& obj) {
+    std::cout << "Choose name: ";
+    in >> obj.name;
+    return in;
+}
+
+std::ostream& operator<<(std::ostream& out, const Player& obj) {
+    out << "Player #" << obj.id + 1 << " " << obj.name;
+    return out;
+}
+
 

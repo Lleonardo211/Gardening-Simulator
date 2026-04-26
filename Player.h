@@ -34,6 +34,19 @@ private:
 
 public:
     Player(const std::string& name);
+    Player(const std::string& name,
+           int currentWeek,
+           int HP,
+           int medkits,
+           int coins,
+           int potatoSeeds,
+           int tomatoSeeds,
+           int potatoCrates,
+           int tomatoCrates,
+           int fertilizer,
+           int atomicFertilizer);
+    Player(const Player& obj);
+    Player& operator=(const Player& obj);
     ~Player();
 
     void printStats() const;
@@ -84,8 +97,8 @@ public:
     void setCurrentWeek(int newIdx) { currentWeek = newIdx; }
     void setCoins(int coinCnt) { coins = coinCnt; }
 
+    friend std::istream& operator>>(std::istream& in, Player& obj);
     friend std::ostream& operator<<(std::ostream& out, const Player& obj);
-
 };
 
 

@@ -21,6 +21,9 @@ private:
 
 public:
     Plot();
+    Plot(int waterLevel, bool fertilization, bool radioactivity);
+    Plot(const Plot& obj);
+    Plot& operator=(const Plot& obj);
     ~Plot();
 
     static void calculateWeather();
@@ -46,8 +49,8 @@ public:
 
     void setWaterLevel(int newLevel) { waterLevel = newLevel; }
 
+    friend std::istream& operator>>(std::istream& in, Plot& obj);
     friend std::ostream& operator<<(std::ostream& out, const Plot& obj);
-
 };
 
 

@@ -9,7 +9,10 @@ private:
     int waterVolume;
 public:
     Tank();
-    ~Tank() {}
+    Tank(int size, int waterVolume);
+    Tank(const Tank& obj);
+    Tank& operator=(const Tank& obj);
+    ~Tank() = default;
 
     void mediumUpgrade();
     void bigUpgrade();
@@ -18,6 +21,7 @@ public:
     int getWaterVolume() const { return waterVolume; }
     void setWaterVolume(int newVolume) { waterVolume = newVolume; }
 
+    friend std::istream& operator>>(std::istream& in, Tank& obj);
     friend std::ostream& operator<<(std::ostream& out, const Tank& obj);
 };
 

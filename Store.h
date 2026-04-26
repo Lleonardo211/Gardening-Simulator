@@ -1,7 +1,7 @@
 #ifndef GARDENINGSIMULATOR_STORE_H
 #define GARDENINGSIMULATOR_STORE_H
 
-
+#include <iostream>
 
 class Store {
     bool knowledge;
@@ -20,7 +20,21 @@ class Store {
 
 public:
     Store();
-    ~Store() {}
+    Store(bool knowledge,
+          int ragebait,
+          int potatoPrice,
+          int tomatoPrice,
+          int shovelPrice,
+          int tankPrice,
+          int medkitPrice,
+          int fertilizerPrice,
+          int atomicFerPrice,
+          int plotPrice,
+          int potatoPayment,
+          int tomatoPayment);
+    Store(const Store& obj);
+    Store& operator=(const Store& obj);
+    ~Store() = default;
 
     int barter(int coins, int price) const;
     void increaseRagebait(int coins, int price);
@@ -40,10 +54,12 @@ public:
     int getPotatoPayment() const { return potatoPayment; }
     int getTomatoPayment() const { return tomatoPayment; }
 
+    void setKnowledge(bool aux) { knowledge = aux; }
     void setShovelPrice(int aux) { shovelPrice = aux; }
     void setTankPrice(int aux) { tankPrice = aux; }
 
-    void setKnowledge(bool aux) { knowledge = aux; }
+    friend std::istream& operator>>(std::istream& in, Store& obj);
+    friend std::ostream& operator<<(std::ostream& out, const Store& obj);
 };
 
 
