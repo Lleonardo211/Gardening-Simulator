@@ -157,5 +157,5 @@ std::ostream& operator<<(std::ostream& out, const Store& obj) {
     out << obj.atomicFerPrice;
     std::cout << "\nPlot prize: ";
     out << obj.plotPrice;
-    return out
+    return out;
 }
