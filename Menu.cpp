@@ -3,6 +3,11 @@
 #include <iostream>
 #include <string>
 
+Menu::~Menu() {
+    for (Player* p: players)
+        delete p;
+}
+
 void Menu::printPlayers() const {
     if (players.empty()) {
         std::cout<<"No saves found";
@@ -12,6 +17,7 @@ void Menu::printPlayers() const {
     for (size_t i = 0; i <players.size(); i++)
         std::cout << *players[i] << "\n\n";
 }
+
 int Menu::choosePlayer() const {
     if (players.empty()) {
         std::cout << "No saves found!";
@@ -76,6 +82,8 @@ void Menu::skip(int playerIdx) {
     players[playerIdx] -> setCurrentWeek(players[playerIdx] -> getCurrentWeek() + 1);
     players[playerIdx] -> setWeather();
     players[playerIdx] -> updateCrops();
+    store.resetRagebait();
+    store.resetPrices();
 }
 
 void Menu::gardenMenu(int playerIdx) {
@@ -271,12 +279,12 @@ void Menu::gardeningMenu (int playerIdx, int plotIdx) const {
 }
 
 void Menu::storeMenu(int playerIdx) {
-    playerIdx--;
     while(true){
         std::cout << "\n---Botanic Store---\n\n";
         std::cout << "1 - Exit to Garden\n";
         std::cout << "2 - Buy\n";
         std::cout << "3 - Sell\n";
+        std::cout << "4 - fill up water tank\n";
         std::cout << "\nOption: ";
 
         int option;
@@ -287,6 +295,172 @@ void Menu::storeMenu(int playerIdx) {
         switch(option){
             case 1: {
                 return;
+            }
+
+            case 2: {
+                buy(playerIdx);
+                break;
+            }
+
+            case 3: {
+                sell(playerIdx);
+                break;
+            }
+
+            case 4: {
+                players[playerIdx] -> fillWaterTank();
+                break;
+            }
+
+            default:{
+                std::cout << "Invalid option!";
+                std::cin.get();
+            }
+        }
+    }
+}
+
+void Menu::buy(int playerIdx) {
+    if (store.ragebaitCheck()) {
+        std::cout << "You are not welcome today!";
+        std::cin.get();
+        return;
+    }
+    while(true){
+        std::cout << "\nI'm looking to buy...\n\n";
+        std::cout << "1 - potato seeds: " << store.getPotatoPrice() << '\n';
+        std::cout << "2 - tomato seeds: " << store.getTomatoPrice() << '\n';
+        std::cout << "3 - reinforced shovel: " << store.getShovelPrice() << '\n';
+        std::cout << "4 - upgrade water tank: " << store.getTankPrice() << '\n';
+        std::cout << "5 - medkit: " << store.getMedkitPrice() << '\n';
+        std::cout << "6 - fertilizer: " << store.getPotatoPrice() << '\n';
+        std::cout << "7 - plot of land: " << store.getPlotPrice() << '\n';
+        if (store.getKnowledge() == false)
+            std::cout << "8 - Ask if there is any way to make plants grow faster...\n";
+        else
+            std::cout << "8 - atomic fertilizer: " << store.getAtomicFerPrice() << '\n';
+        std::cout << "0 - Cancel\n";
+        std::cout << "\nOption: ";
+
+        int option;
+        std::cin >> option;
+        std::cin.ignore();
+        std::cout << '\n';
+
+        switch(option) {
+            case 0: {
+                return;
+            }
+
+            case 1: {
+                players[playerIdx] -> buy(store, 1);
+                if (store.ragebaitCheck()) return;
+                break;
+            }
+
+            case 2: {
+                players[playerIdx] -> buy(store, 2);
+                if (store.ragebaitCheck()) return;
+                break;
+            }
+
+            case 3: {
+                players[playerIdx] -> upgradeShovel(store);
+                if (store.ragebaitCheck()) return;
+                break;
+            }
+
+            case 4: {
+                players[playerIdx] -> upgradeTank(store);
+                break;
+            }
+
+            case 5: {
+                players[playerIdx] -> buy(store, 3);
+                break;
+            }
+
+            case 6: {
+                players[playerIdx] -> buy(store, 4);
+                if (store.ragebaitCheck()) return;
+                break;
+            }
+
+            case 7: {
+                players[playerIdx] -> buy(store, 5);
+                break;
+            }
+
+            case 8: {
+                players[playerIdx] -> buy(store, 6);
+                if (store.ragebaitCheck()) return;
+                break;
+            }
+
+            default:{
+                std::cout << "Invalid option!";
+                std::cin.get();
+            }
+        }
+    }
+}
+
+void Menu::sell(int playerIdx) {
+    while(true) {
+        std::cout << "\nI'm looking to sell...\n\n";
+        std::cout << "1 - potato crates: " << store.getPotatoPayment() << '\n';
+        std::cout << "2 - tomato crates: " << store.getTomatoPayment()<< '\n';
+        std::cout << "0 - Cancel\n";
+        std::cout << "\nOption: ";
+
+        int option;
+        std::cin >> option;
+        std::cin.ignore();
+        std::cout << '\n';
+
+        switch(option) {
+            case 0: {
+                return;
+            }
+
+            case 1: {
+                int crateCnt = players[playerIdx] -> getPotatoCrates();
+                if (crateCnt == 0) {
+                    std::cout << "You don't have any potato crates!";
+                    std::cin.get();
+                    break;
+                }
+                int amount = 0;
+                std::cout << "Choose amount: ";
+                std::cin >> amount;
+                std::cin.get();
+                if (amount < 1 || amount > crateCnt) {
+                    std::cout << "Invalid amount!";
+                    std::cin.get();
+                    break;
+                }
+                players[playerIdx] -> sellPotatoes(store,amount);
+                break;
+            }
+
+            case 2: {
+                int crateCnt = players[playerIdx] -> getTomatoCrates();
+                if (crateCnt == 0) {
+                    std::cout << "You don't have any tomato crates!";
+                    std::cin.get();
+                    break;
+                }
+                int amount = 0;
+                std::cout << "Choose amount: ";
+                std::cin >> amount;
+                std::cin.get();
+                if (amount < 1 || amount > crateCnt) {
+                    std::cout << "Invalid amount!";
+                    std::cin.get();
+                    break;
+                }
+                players[playerIdx] -> sellTomatoes(store,amount);
+                break;
             }
 
             default:{

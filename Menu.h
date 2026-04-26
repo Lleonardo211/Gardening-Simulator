@@ -2,19 +2,20 @@
 #define GARDENINGSIMULATOR_MENU_H
 
 #include "Player.h"
+#include "Store.h"
 #include <vector>
 
 class Menu {
 private:
     std::vector<Player*> players;
+    Store store;
 
-public:
-    Menu() = default;
-    void mainMenu();
     void gardenMenu(int index);
     void storeMenu(int index);
     void gardeningMenu(int playerIdx, int plotIdx) const;
     void skip(int playerIdx);
+    void buy(int playerIdx);
+    void sell(int playerIdx);
 
     void printPlayers() const;
     int choosePlayer() const;
@@ -22,6 +23,11 @@ public:
     int chooseSeeds(int playerIdx) const;
 
     int chooseFertilizer(int playerIdx) const;
+
+public:
+    Menu() = default;
+    ~Menu();
+    void mainMenu();
 
 };
 

@@ -1,38 +1,36 @@
 #include "Shovel.h"
 #include <iostream>
 
-Shovel::Shovel(int type) {
-    switch (type) {
+Shovel::Shovel() : type(1), AP(10), durability(30){}
+
+std::ostream& operator<<(std::ostream& out, const Shovel& obj) {
+    switch (obj.type) {
         case 2: {
-            this -> AP = 20;
-            this -> durability = 50;
+            out << "reinforced shovel " << obj.AP << "AP";
             break;
         }
         case 3: {
-            this -> AP = 30;
-            this -> durability = 100;
+            out << "combat shovel "<< obj.AP << "AP";
             break;
         }
         default: {
-            this -> AP = 10;
-            this -> durability = 30;
+            out << "old shovel "<< obj.AP << "AP";
             break;
         }
     }
+    return out;
 }
 
-std::ostream& operator<<(std::ostream& out, const Shovel& obj) {
-    switch (obj.AP) {
-        case 20: {
-            out << "reinforced shovel";
-        }
-        case 30: {
-            out << "combat shovel";
-        }
-        default: {
-            out << "old shovel";
-        }
-    }
-    return out;
-    return out;
+void Shovel::mediumUpgrade() {
+    type = 2;
+    AP = 20;
+    durability = 50;
 }
+
+void Shovel::bigUpgrade() {
+    type = 3;
+    AP = 30;
+    durability = 100;
+}
+
+

@@ -5,12 +5,18 @@
 
 class Shovel {
 private:
+    int type;
     int AP;
     int durability;
 
 public:
-    Shovel(int type);
+    Shovel();
     ~Shovel() = default;
+
+    void mediumUpgrade();
+    void bigUpgrade();
+
+    int getType() const { return type; }
 
     friend std::ostream& operator<<(std::ostream& out, const Shovel& obj);
 

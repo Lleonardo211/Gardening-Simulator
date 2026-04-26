@@ -10,9 +10,11 @@ private:
 public:
     Tank();
     ~Tank() {}
+
     void mediumUpgrade();
     void bigUpgrade();
 
+    int getSize() const { return size; }
     int getWaterVolume() const { return waterVolume; }
     void setWaterVolume(int newVolume) { waterVolume = newVolume; }
 
