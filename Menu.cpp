@@ -288,7 +288,7 @@ bool Menu::unlucky() const {
     static std::random_device seed;
     static std::mt19937 gen(seed());
     std::uniform_int_distribution<> dist(1,100);
-    if (dist(gen) < 99) return true;
+    if (dist(gen) < 33) return true;
     return false;
 }
 
