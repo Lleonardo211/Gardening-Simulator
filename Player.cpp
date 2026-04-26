@@ -1,6 +1,7 @@
 #include "Player.h"
 #include "Store.h"
 #include <iostream>
+#include <fstream>
 #include <string>
 #include <algorithm>
 #include <random>
@@ -19,7 +20,8 @@ Player::Player(const std::string& name)
       potatoCrates(0),
       tomatoCrates(0),
       fertilizer(0),
-      atomicFertilizer(0){
+      atomicFertilizer(0),
+      attackEvent(false){
     for (int i =0; i < 4; i++)
         plots.push_back(new Plot());
 }
@@ -34,7 +36,8 @@ Player::Player(const std::string& name,
                int potatoCrates,
                int tomatoCrates,
                int fertilizer,
-               int atomicFertilizer)
+               int atomicFertilizer,
+               bool attackEvent)
                    :
                id(playerCnt++),
                name(name),
@@ -47,7 +50,8 @@ Player::Player(const std::string& name,
                potatoCrates(potatoCrates),
                tomatoCrates(tomatoCrates),
                fertilizer(fertilizer),
-               atomicFertilizer(atomicFertilizer) {}
+               atomicFertilizer(atomicFertilizer),
+               attackEvent(attackEvent) {}
 
 Player::Player(const Player& obj)
           : id(playerCnt++),
@@ -63,7 +67,8 @@ Player::Player(const Player& obj)
             potatoCrates(obj.potatoCrates),
             tomatoCrates(obj.tomatoCrates),
             fertilizer(obj.fertilizer),
-            atomicFertilizer(obj.atomicFertilizer) {
+            atomicFertilizer(obj.atomicFertilizer),
+            attackEvent(obj.attackEvent){
     for (Plot* p : obj.plots)
         plots.push_back(new Plot(*p));
 }
@@ -71,7 +76,7 @@ Player::Player(const Player& obj)
 Player& Player::operator=(const Player& obj) {
     if (this != &obj) {
         name = obj.name;
-        currentWeek =obj .currentWeek;
+        currentWeek =obj.currentWeek;
         HP = obj.HP;
         medkits = obj.medkits;
         coins = obj.coins;
@@ -81,6 +86,7 @@ Player& Player::operator=(const Player& obj) {
         tomatoCrates = obj.tomatoCrates;
         fertilizer = obj.fertilizer;
         atomicFertilizer = obj.atomicFertilizer;
+        attackEvent = obj.attackEvent;
         for (Plot* p : plots) delete p;
         plots.clear();
         for (Plot* p : obj.plots)
@@ -129,8 +135,10 @@ void Player::printPlotStats(int plotIdx) const {
 }
 
 void Player::printPlots() const {
-    for (Plot* p : plots)
-        std::cout << *p << '\n';
+    for (size_t i = 0; i < plots.size(); i++) {
+        std::cout << "PLot # " << i + 1 << '\n';
+        std::cout << *plots[i] << '\n';
+    }
 }
 
 int Player::choosePlot() const {
@@ -260,11 +268,12 @@ void Player::buy(Store& store, int product) {
             if (!store.getKnowledge()) {
                 std::cout << "I might have something for you, but you have to use it at your own risk...\n\n";
                 std::cout << "1 - Yes\n";
-                std::cout << "2 - No\n";
-                std::cout << "Choose index: ";
-                int index;
-                std::cin >> index;
-                if (index) store.setKnowledge(true);
+                std::cout << "2 - No\n\n";
+                std::cout << "Choose option: ";
+                int option;
+                std::cin >> option;
+                std::cin.ignore();
+                if (option == 1) store.setKnowledge(true);
                 return;
             } else {
                 price = store.getAtomicFerPrice();
@@ -291,6 +300,7 @@ void Player::buy(Store& store, int product) {
             std::cin.clear();
             std::cin.ignore();
         }
+        std::cin.ignore();
         if (option == 1) {
             int newPrice = store.barter(coins, price);
             if ( newPrice != -1) {
@@ -468,10 +478,10 @@ void Player::lightAttack(Plant* plant) {
     if (luck > 20) {
         int damage = shovel.getAP();
         plant -> takeDamage(damage);
-        std::cout << "Plant hit for " << damage << " HP";
+        std::cout << "\nYou hit for " << damage << " HP\n";
         std::cin.get();
     } else {
-        std::cout << "You missed!";
+        std::cout << "\nYou missed!\n";
         std::cin.get();
     }
 
@@ -485,10 +495,10 @@ void Player::normalAttack(Plant* plant) {
     if (luck > 40) {
         int damage = shovel.getAP() * 15 / 10;
         plant -> takeDamage(damage);
-        std::cout << "Plant hit for " << damage << " HP";
+        std::cout << "\nYou hit for " << damage << " HP\n";
         std::cin.get();
     } else {
-        std::cout << "You missed!";
+        std::cout << "\nYou missed!\n";
         std::cin.get();
     }
 
@@ -502,25 +512,26 @@ void Player::heavyAttack(Plant* plant) {
         if (luck > 60) {
             int damage = shovel.getAP() * 2;
             plant -> takeDamage(damage);
-            std::cout << "Plant hit for " << damage << " HP";
+            std::cout << "\nYou hit for " << damage << " HP\n";
             std::cin.get();
         } else {
-            std::cout << "You missed!";
+            std::cout << "\nYou missed!\n";
             std::cin.get();
         }
 }
 
 bool Player::initiateFight(int plotIdx) {
     Plant* plant = plots[plotIdx] -> getPlantPtr();
-    std::cout << "A vicious " << plant -> plantType() << " is attacking you! Put it back in the dirt, soldier...";
+    std::cout << "A mutated " << plant -> plantType() << " is attacking you! Put it back in the dirt!";
     std::cin.get();
+    std::cout << "\n";
 
     while (HP && plant -> getHP()) {
         std::cout << " 1 - Light Attack\n";
         std::cout << " 2 - Normal Attack\n";
         std::cout << " 3 - Heavy Attack\n";
         std::cout << " 4 - Use Medkit\n";
-        std::cout << " 5 - Choose action: ";
+        std::cout << "\n Choose action: ";
         int option;
         try {
             std::cin >> option;
@@ -530,8 +541,7 @@ bool Player::initiateFight(int plotIdx) {
             std::cin.clear();
             std::cin.ignore();
         }
-        std::cin.get();
-
+        std::cin.ignore();
         switch (option) {
             case 1: {
                 lightAttack(plant);
@@ -550,7 +560,7 @@ bool Player::initiateFight(int plotIdx) {
                     HP = 100;
                     medkits--;
                 } else {
-                    std::cout << "You ran out of medkits!";
+                    std::cout << "\nYou ran out of medkits!\n";
                     std::cin.get();
                 }
                 break;
@@ -570,11 +580,99 @@ bool Player::initiateFight(int plotIdx) {
         plant -> plantAttack(this);
 
         if (!HP) {
-            std::cout << "You were eaten!";
+            std::cout << "You were eaten!\n";
             return false;
         }
     }
     return true;
+}
+
+void Player::save(const std::string& farmer) const {
+    std::ofstream file(farmer);
+    if (!file.is_open()) throw std::runtime_error("Could not open save file!");
+
+    file << name << '\n';
+    file << currentWeek << ' ' << HP << ' ' << medkits <<  ' ' << coins << '\n';
+    file << potatoSeeds << ' ' << tomatoSeeds << ' '
+         << potatoCrates << ' ' << tomatoCrates << ' '
+         << fertilizer << ' ' << atomicFertilizer << ' '
+         << attackEvent << '\n';
+    file << shovel.getType() << ' ' << shovel.getAP() << ' ' << shovel.getDurability() << '\n';
+    file << tank.getSize() << ' ' << tank.getWaterVolume() << '\n';
+    file << plots.size() << '\n';
+    for (Plot* p : plots) {
+        file << p -> getWaterLevel() << ' ' << p -> getFertilization() << ' ' << p -> getRadioactivity() << '\n';
+        file << p -> getPlant() << '\n';
+        if (p -> getPlant() != "none") {
+            Plant* plant = p ->getPlantPtr();
+            file << plant -> getGrowth() << ' ' << plant -> getHP() << ' ' << plant -> getAP() << ' ' << plant -> getToughness() << '\n';
+        }
+    }
+    file.close();
+}
+
+Player* Player::load(const std::string& farmer) {
+    std::ifstream file(farmer);
+    if (!file.is_open()) throw std::runtime_error("Could not open save file!");
+
+    std::string name;
+    int currentWeek, HP, medkits, coins;
+    int potatoSeeds, tomatoSeeds,
+        potatoCrates, tomatoCrates,
+        fertilizer, atomicFertilizer;
+    bool attackEvent;
+    int shovelType, shovelAP, shovelDurability;
+    int tankSize, tankWaterVolume;
+    int plotCnt;
+
+    std::getline(file, name);
+    file >> currentWeek >> HP >> medkits >> coins;
+    file >> potatoSeeds >> tomatoSeeds
+         >> potatoCrates >> tomatoCrates
+         >> fertilizer >> atomicFertilizer
+         >> attackEvent;
+    file >> shovelType >> shovelAP >> shovelDurability;
+    file >> tankSize >> tankWaterVolume;
+    file >> plotCnt;
+    file.ignore();
+
+    Player* player = new Player(name, currentWeek, HP, medkits, coins,
+                                potatoSeeds,tomatoSeeds, potatoCrates,
+                                tomatoCrates, fertilizer, atomicFertilizer,
+                                attackEvent);
+
+    for (int i = 0; i < plotCnt; i++) {
+        int waterLevel, fertilization, radioactivity;
+        std::string plantType;
+        file >> waterLevel >> fertilization >> radioactivity;
+        file.ignore();
+        std::getline(file, plantType);
+
+        Plot* plot = new Plot(waterLevel, fertilization, radioactivity);
+
+        if (plantType != "none") {
+            int growth, plantHP, plantAP, plantToughness;
+            file >> growth >> plantHP >> plantAP >> plantToughness;
+            file.ignore();
+            if (plantType == "potato") plot -> assignPlant(1);
+            else plot -> assignPlant(2);
+            Plant* plant = plot -> getPlantPtr();
+            plant -> setGrowth(growth);
+            plant -> setHP(plantHP);
+            plant -> setAP(plantAP);
+            plant -> setToughness(plantToughness);
+        }
+        player -> plots.push_back(plot);
+    }
+
+    player -> shovel.setType(shovelType);
+    player -> shovel.setAP(shovelAP);
+    player -> shovel.setDurability(shovelDurability);
+    player -> tank.setSize(tankSize);
+    player -> tank.setWaterVolume(tankWaterVolume);
+
+    file.close();
+    return player;
 }
 
 std::istream& operator>>(std::istream& in, Player& obj) {

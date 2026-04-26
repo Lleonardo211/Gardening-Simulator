@@ -10,7 +10,7 @@ class Player;
 
 class Potato : public Plant {
 public:
-    Potato() : Plant(false, 60, 8 , 10) {}
+    Potato() : Plant(false, 30, 8 , 10) {}
     Potato(const Potato& obj);
     Potato& operator=(const Potato& obj);
     ~Potato() override;

@@ -157,7 +157,6 @@ std::istream& operator>>(std::istream& in, Plot& obj) {
 }
 
 std::ostream& operator<<(std::ostream& out, const Plot& obj) {
-    out << "Plot #" << obj.id + 1 << '\n';
     if (obj.plant == nullptr)
         out << "Empty\n";
     else

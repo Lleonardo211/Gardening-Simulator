@@ -26,11 +26,15 @@ public:
     virtual void heavyAttack(Player* player) = 0;
     void takeDamage(int damage);
 
-    void setGrowth(bool newGrowth) { growth = newGrowth; }
-
     bool getGrowth() const { return growth; }
     int getHP() const { return HP; }
     int getAP() const { return AP; }
+    int getToughness() const { return toughness; }
+
+    void setGrowth(bool newGrowth) { growth = newGrowth; }
+    void setHP(int newHP) { HP = newHP; }
+    void setAP(int newAP) { AP = newAP; }
+    void setToughness(int newToughness) { toughness = newToughness; }
 
     friend std::ostream& operator<<(std::ostream& out, const Plant& obj);
 

@@ -10,6 +10,9 @@ private:
     std::vector<Player*> players;
     Store store;
 
+    void loadPlayers();
+    void savePlayers() const;
+
     void gardenMenu(int index);
     void storeMenu(int index);
     bool unlucky() const;

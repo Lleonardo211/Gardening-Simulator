@@ -19,6 +19,8 @@ public:
 
     int getSize() const { return size; }
     int getWaterVolume() const { return waterVolume; }
+
+    void setSize(int newSize) { size = newSize; }
     void setWaterVolume(int newVolume) { waterVolume = newVolume; }
 
     friend std::istream& operator>>(std::istream& in, Tank& obj);

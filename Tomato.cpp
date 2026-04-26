@@ -35,6 +35,8 @@ void Tomato::plantAttack(Player* player) {
 }
 
 void Tomato::lightAttack(Player* player) {
+    std::cout << "The " << plantType() << " is attacking!!\n";
+    std::cin.get();
     static std::random_device seed;
     static std::mt19937 gen(seed());
     std::uniform_int_distribution<> dist(1,100);
@@ -42,15 +44,17 @@ void Tomato::lightAttack(Player* player) {
     if (luck > 40) {
         int damage = AP;
         player -> takeDamage(damage);
-        std::cout << "Plant hit for " << damage << " damage!";
+        std::cout << "Plant hit for "<< damage << " damage!\n";
         std::cin.get();
     } else {
-        std::cout << "Plant missed!";
+        std::cout << "IT MISSED!\n";
         std::cin.get();
     }
 }
 
 void Tomato::normalAttack(Player* player) {
+    std::cout << "The " << plantType() << " is attacking!!\n";
+    std::cin.get();
     static std::random_device seed;
     static std::mt19937 gen(seed());
     std::uniform_int_distribution<> dist(1,100);
@@ -58,15 +62,17 @@ void Tomato::normalAttack(Player* player) {
     if (luck > 60) {
         int damage = AP * 2;
         player -> takeDamage(damage);
-        std::cout << "Plant hit for " << damage << " damage!";
+        std::cout << "Plant hit for "<< damage << " damage!\n";
         std::cin.get();
     } else {
-        std::cout << "Plant missed!";
+        std::cout << "IT MISSED!\n";
         std::cin.get();
     }
 }
 
 void Tomato::heavyAttack(Player* player) {
+    std::cout << "The " << plantType() << " is preparing a massive attack!!\n";
+    std::cin.get();
     static std::random_device seed;
     static std::mt19937 gen(seed());
     std::uniform_int_distribution<> dist(1,100);
@@ -74,10 +80,10 @@ void Tomato::heavyAttack(Player* player) {
     if (luck > 75) {
         int damage = AP * 3;
         player -> takeDamage(damage);
-        std::cout << "Plant hit for "<< damage << " damage!";
+        std::cout << "Plant hit for "<< damage << " damage!\n";
         std::cin.get();
     } else {
-        std::cout << "Plant missed!";
+        std::cout << "IT MISSED!\n";
         std::cin.get();
     }
 }

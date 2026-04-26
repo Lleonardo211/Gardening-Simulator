@@ -27,6 +27,7 @@ private:
     int tomatoCrates;
     int fertilizer;
     int atomicFertilizer;
+    bool attackEvent;
 
     void printPlots() const;
     void decreaseSeeds(int seedType);
@@ -44,7 +45,8 @@ public:
            int potatoCrates,
            int tomatoCrates,
            int fertilizer,
-           int atomicFertilizer);
+           int atomicFertilizer,
+           bool attackEvent);
     Player(const Player& obj);
     Player& operator=(const Player& obj);
     ~Player();
@@ -86,16 +88,28 @@ public:
 
     void takeDamage(int damage);
 
-    int getCurrentWeek() const{ return currentWeek; }
-    int getPotatoSeeds() const{ return potatoSeeds; }
-    int getTomatoSeeds() const{ return tomatoSeeds; }
-    int getPotatoCrates() const{ return potatoCrates; }
-    int getTomatoCrates() const{ return tomatoCrates; }
-    int getFertilizer() const{ return fertilizer; }
-    int getAtomicFertilizer() const{ return atomicFertilizer; }
+    void save(const std::string& farmer) const;
+    static Player* load(const std::string& farmer);
+
+    std::string getName() const { return name; }
+    int getCurrentWeek() const { return currentWeek; }
+    int getHP() const { return HP; }
+    int getMedkits() const { return medkits; }
+    int getCoins() const { return coins; }
+    const std::vector<Plot*>& getPlots() const { return plots; }
+    const Shovel& getShovel() const { return shovel; }
+    const Tank& getTank() const { return tank; }
+    int getPotatoSeeds() const { return potatoSeeds; }
+    int getTomatoSeeds() const { return tomatoSeeds; }
+    int getPotatoCrates() const { return potatoCrates; }
+    int getTomatoCrates() const { return tomatoCrates; }
+    int getFertilizer() const { return fertilizer; }
+    int getAtomicFertilizer() const { return atomicFertilizer; }
+    bool getAttackEvent() const { return attackEvent; }
 
     void setCurrentWeek(int newIdx) { currentWeek = newIdx; }
     void setCoins(int coinCnt) { coins = coinCnt; }
+    void setAttackEvent(bool newValue) { attackEvent = newValue; }
 
     friend std::istream& operator>>(std::istream& in, Player& obj);
     friend std::ostream& operator<<(std::ostream& out, const Player& obj);

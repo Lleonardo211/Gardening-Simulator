@@ -1,6 +1,7 @@
 #include "Menu.h"
 #include "Player.h"
 #include <iostream>
+#include <fstream>
 #include <string>
 #include <random>
 
@@ -36,7 +37,7 @@ int Menu::choosePlayer() const {
         std::cin.clear();
         std::cin.ignore();
     }
-    std::cin.get();
+    std::cin.ignore();
     if (index < 0 || index > static_cast<int>(players.size())) {
         std::cout << "\nInvalid index!\n";
         std::cin.get();
@@ -45,7 +46,29 @@ int Menu::choosePlayer() const {
     return index;
 }
 
+void Menu::savePlayers() const {
+    std::ofstream file("saves.txt");
+    if (!file.is_open()) throw std::runtime_error("Could not open saves.txt!");
+    for (Player* player : players)
+        file << "save_" + player -> getName() + ".txt" << '\n';
+}
+
+void Menu::loadPlayers() {
+    std::ifstream file("saves.txt");
+    if (!file.is_open()) return;
+    std::string farmer;
+    while (std::getline(file, farmer)) {
+        try {
+            Player* player = Player::load(farmer);
+            players.push_back(player);
+        } catch (std::runtime_error& e) {
+            std::cout << "Could not load " << farmer << "; " << e.what() << '\n';
+        }
+    }
+}
+
 void Menu::mainMenu() {
+    loadPlayers();
     while(true){
         std::cout << "\n---Main Menu---\n\n";
         std::cout << "1 - Select farmer\n";
@@ -79,6 +102,8 @@ void Menu::mainMenu() {
                 Player* p = new Player(name);
                 players.push_back(p);
                 players[players.size() - 1] -> setWeather();
+                players[players.size() - 1] -> save("save_" + name + ".txt");
+                savePlayers();
                 break;
             }
             case 3:{
@@ -128,6 +153,8 @@ void Menu::gardenMenu(int playerIdx) {
 
         switch(option){
             case 1: {
+                players[playerIdx] -> save("save_" + players[playerIdx] -> getName() + ".txt");
+                savePlayers();
                 return;
             }
             case 2: {
@@ -235,13 +262,16 @@ bool Menu::unlucky() const {
     static std::random_device seed;
     static std::mt19937 gen(seed());
     std::uniform_int_distribution<> dist(1,100);
-    if (dist(gen) < 35) return true;
+    if (dist(gen) < 99) return true;
     return false;
 }
 
 void Menu::gameOver(int playerIdx) {
+    std::string file  = "save_" + players[playerIdx] -> getName() + ".txt";
+    std::remove(file.c_str());
     delete players[playerIdx];
     players.erase(players.begin() + playerIdx);
+    savePlayers();
 }
 
 void Menu::gardeningMenu (int playerIdx, int plotIdx) {
@@ -319,8 +349,14 @@ void Menu::gardeningMenu (int playerIdx, int plotIdx) {
                     break;
                 }
                 if (players[playerIdx] -> radioactivityCheck(plotIdx) && unlucky()) {
-                    std::cout << "Oh no... The radiation gave birth to a vicious beast!";
+                    if (!players[playerIdx] -> getAttackEvent()) {
+                        std::cout << "Oh no... The radiation gave birth to a vicious beast!";
+                        players[playerIdx] -> setAttackEvent(true);
+                    } else {
+                        std::cout << "Not again...\n";
+                    }
                     std::cin.get();
+                    std::cout << "\n";
                     bool survived = players[playerIdx] -> initiateFight(plotIdx);
                     if (!survived) {
                         gameOver(playerIdx);
@@ -414,7 +450,7 @@ void Menu::buy(int playerIdx) {
             std::cout << "8 - Ask if there is any way to make plants grow faster...\n";
         else
             std::cout << "8 - atomic fertilizer: " << store.getAtomicFerPrice() << '\n';
-        std::cout << "0 - Cancel\n";
+        std::cout << "\n0 - Cancel\n";
         std::cout << "\nOption: ";
 
         int option;
@@ -492,7 +528,7 @@ void Menu::sell(int playerIdx) {
         std::cout << "\nI'm looking to sell...\n\n";
         std::cout << "1 - potato crates: " << store.getPotatoPayment() << '\n';
         std::cout << "2 - tomato crates: " << store.getTomatoPayment()<< '\n';
-        std::cout << "0 - Cancel\n";
+        std::cout << "\n0 - Cancel\n";
         std::cout << "\nOption: ";
 
         int option;
@@ -522,7 +558,7 @@ void Menu::sell(int playerIdx) {
                 int amount = 0;
                 std::cout << "Choose amount: ";
                 std::cin >> amount;
-                std::cin.get();
+                std::cin.ignore();
                 if (amount < 1 || amount > crateCnt) {
                     std::cout << "Invalid amount!";
                     std::cin.get();
@@ -542,7 +578,7 @@ void Menu::sell(int playerIdx) {
                 int amount = 0;
                 std::cout << "Choose amount: ";
                 std::cin >> amount;
-                std::cin.get();
+                std::cin.ignore();
                 if (amount < 1 || amount > crateCnt) {
                     std::cout << "Invalid amount!";
                     std::cin.get();

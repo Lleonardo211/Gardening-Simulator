@@ -6,7 +6,7 @@
 
 class Tomato : public Plant {
 public:
-    Tomato() : Plant(false, 40, 5, 4) {}
+    Tomato() : Plant(false, 25, 5, 4) {}
     Tomato(const Tomato& obj);
     Tomato& operator=(const Tomato& obj);
     ~Tomato() override;

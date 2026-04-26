@@ -23,6 +23,10 @@ public:
     int getAP() const { return AP; }
     int getDurability() const { return durability;}
 
+    void setType(int newType) { type = newType; }
+    void setAP(int newAP) { AP = newAP; }
+    void setDurability(int newDurability) { durability = newDurability; }
+
     friend std::istream& operator>>(std::istream& in, Shovel& obj);
     friend std::ostream& operator<<(std::ostream& out, const Shovel& obj);
 };

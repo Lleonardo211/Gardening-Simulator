@@ -141,21 +141,13 @@ std::istream& operator>>(std::istream& in, Store& obj) {
 }
 
 std::ostream& operator<<(std::ostream& out, const Store& obj) {
-    std::cout << "\nPotato seed price: ";
-    out << obj.potatoPrice;
-    std::cout << "\nTomato seed price: ";
-    out << obj.tomatoPrice;
-    std::cout << "\nShovel price: ";
-    out << obj.shovelPrice;
-    std::cout << "\nTank price: ";
-    out << obj.tankPrice;
-    std::cout << "\nMedkit price: ";
-    out << obj.medkitPrice;
-    std::cout << "\nFertilizer prize: ";
-    out << obj.fertilizerPrice;
-    std::cout << "\nAtomic Fertilizer prize: ";
-    out << obj.atomicFerPrice;
-    std::cout << "\nPlot prize: ";
-    out << obj.plotPrice;
+    out << "\nPotato seed price: " << obj.potatoPrice;
+    out << "\nTomato seed price: " << obj.tomatoPrice;
+    out << "\nShovel price: " << obj.shovelPrice;
+    out << "\nTank price: " << obj.tankPrice;
+    out << "\nMedkit price: " << obj.medkitPrice;
+    out << "\nFertilizer prize: " << obj.fertilizerPrice;
+    out << "\nAtomic Fertilizer prize: " << obj.atomicFerPrice;
+    out << "\nPlot prize: " << obj.plotPrice;
     return out;
 }
